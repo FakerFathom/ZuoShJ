@@ -4,17 +4,17 @@
 using namespace std;
 int main() {
     int input;
-    vector<int> ivec;
+    vector<vector<int>*> ivec;
     // input
-    while (cin >> input)
-        ivec.push_back(input);
+    ivec.push_back(new vector<int>(20,3));
     // sorting
-    sort(ivec.begin(), ivec.end());
+    sort((*ivec[0]).begin(), (*ivec[0]).end());
     // output
     vector<int>::iterator it;
-    for (it = ivec.begin(); it != ivec.end(); ++it) {
+    for (it = (*ivec[0]).begin(); it != (*ivec[0]).end(); ++it) {
         cout << *it << " ";
     }
+    delete ivec[0];
     cout << endl;
     return 0;
 }
