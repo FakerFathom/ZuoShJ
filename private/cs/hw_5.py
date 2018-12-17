@@ -1,9 +1,6 @@
 class program(object):
-    codes = "a"
-
     def __init__(self, codes):
         self.codes = codes
-
     def CFG(self):
         codes = self.codes
         a = [0 for i in range(100)]
@@ -89,7 +86,6 @@ class program(object):
                 print(";", end="")
         print("]")
 s = ""
-
 while "}" not in s:
     s += input()
     s += '\n'
