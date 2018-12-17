@@ -20,7 +20,8 @@ class program(object):
                 end = i
         for i in range(start, end):
             split = codes.split("\n")[i]
-            subsplit = codes.split("\n")[i+1]
+            after = codes.split("\n")[i+1]
+            before = codes.split("\n")[i-1]
             if "fi" not in split and "done" not in split:
                 index += 1
             if i == start:
@@ -28,7 +29,11 @@ class program(object):
                 b[n] = "begin"
                 n += 1
             if "if" in split:
-                if "return" not in subsplit:
+                if i==start or "fi" or "done" in before:
+                    a[n]=index
+                    b[n]="if"
+                    n+=1
+                elif "return" not in after:
                     a[n] = index+1
                     b[n] = "if"
                     n += 1
@@ -37,11 +42,11 @@ class program(object):
                 b[n] = "while"
                 a[n+1] = index+1
                 n += 2
-            if "fi" in split and "return" not in subsplit:
+            if "fi" in split and "return" not in after:
                 a[n] = index+1
                 b[n] = "fi"
                 n += 1
-            if "done" in split and "return" not in subsplit:
+            if "done" in split and "return" not in after:
                 a[n] = index+1
                 n += 1
             if "return" in split:
