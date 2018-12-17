@@ -1,6 +1,7 @@
 class program(object):
     def __init__(self, codes):
         self.codes = codes
+
     def CFG(self):
         codes = self.codes
         a = [0 for i in range(100)]
@@ -21,15 +22,15 @@ class program(object):
             before = codes.split("\n")[i-1]
             if "fi" not in split and "done" not in split:
                 index += 1
-            if i == start:
+            if i == start and "if" not in split and "while" not in split:
                 a[n] = index
                 b[n] = "begin"
                 n += 1
             if "if" in split:
-                if i==start or "fi" or "done" in before:
-                    a[n]=index
-                    b[n]="if"
-                    n+=1
+                if i == start or ("fi" or "done") in before:
+                    a[n] = index
+                    b[n] = "if"
+                    n += 1
                 elif "return" not in after:
                     a[n] = index+1
                     b[n] = "if"
@@ -47,9 +48,19 @@ class program(object):
                 a[n] = index+1
                 n += 1
             if "return" in split:
-                a[n] = index
-                b[n] = "return"
-                n += 1
+                if "fi" or "done" not in after:
+                    a[n] = index
+                    b[n] = "last return"
+                    n += 1
+                elif "fi" in after:
+                    a[n] = index
+                    b[n] = "if return"
+                    n += 1
+                elif "done" in after:
+                    a[n] = index
+                    b[n] = "while return"
+                    n += 1
+
         matrix = [[0 for i in range(n)] for i in range(n)]
         for i in range(n-1):
             if b[i] == "if":
@@ -85,6 +96,8 @@ class program(object):
             if i != n-1:
                 print(";", end="")
         print("]")
+
+
 s = ""
 while "}" not in s:
     s += input()
