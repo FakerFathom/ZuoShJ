@@ -27,7 +27,7 @@ class program(object):
                 b[n] = "begin"
                 n += 1
             if "if" in split:
-                if i == start or ("fi" or "done" in before):
+                if i == start or ("fi" and "done" in before):
                     a[n] = index
                     b[n] = "if"
                     n += 1
@@ -36,7 +36,7 @@ class program(object):
                     b[n] = "if2"
                     n += 1
             if "fi" in split and "return" not in after:
-                if i != end-1 and ("if" or "while")not in after:
+                if i != end-1 and ("if" and "while")not in after:
                     a[n] = index+1
                     b[n] = "fi"
                     n += 1
@@ -50,7 +50,7 @@ class program(object):
                 else:
                     n += 1
             if "done" in split and "return" not in after:
-                if i != end-1 and ("if" or "while")not in after:
+                if i != end-1 and ("if" and "while")not in after:
                     a[n] = index+1
                     b[n] = "done"
                     n += 1
@@ -78,14 +78,18 @@ class program(object):
             elif b[i] == "if return" and b[i-1] != "if2":
                 matrix[i-1][i] = matrix[i-1][i+1] = 1
             elif b[i] == "while":
-                if (b[i+1] or b[i+2])!="while return":
-                    matrix[i][i+1] = matrix[i+1][i] = 1
-                    if b[i+2] == "last return":
-                        matrix[i][i+2] = 1
+                if (b[i+1] and b[i+2])!="while return":
+                    matrix[i][i+1] = matrix[i+1][i] = matrix[i][i+2] = 1
+                    """ if b[i+2] == "last return":
+                        matrix[i][i+2] = 1 """
+                elif b[i+1]=="while return":
+                    matrix[i][i+1]=matrix[i][i+2] = 1
+                else:
+                    matrix[i][i+1]=matrix[i+1][i+2] = matrix[i][i+3] = 1
                 
             elif b[i] == "last return"and b[i-1]==("fi"or"done"):
                 matrix[i-1][i] = 1
-            elif b[i] == "begin" or b[i] == "fi"or b[i]="done":
+            elif b[i] == "begin" or (b[i] == "fi" and"done"):
                 matrix[i][i+1] = 1
 
         order = [str(a[i])for i in range(n)]
@@ -110,11 +114,32 @@ class program(object):
                 print(";", end="")
         print("]")
 
-
-s = ""
+s="""
+    bool x = True;
+    bool y = False;
+    bool z = True;
+    bool a = True;
+    main()
+    {
+    1:  x= !y;
+    2:  z= !x;
+    3:  if ( (x & y) | (! z) )
+    4:      y= !y;
+    5:      pass;
+        fi
+    6:  x=!y;
+    7:  z=!z;
+    8:  while ( ( x | y) & (a | z) )
+    9:      a=!y;
+    10:     y=!z;
+        done
+    11: return x;
+    } 
+"""
+""" s = ""
 while "}" not in s:
     s += input()
-    s += '\n'
+    s += '\n' """
 """ stopword = '    } '
 for line in iter(input, stopword): # 输入为空行，表示输入结束
   s += line + '\n'
