@@ -36,7 +36,7 @@ class program(object):
                     b[n] = "if2"
                     n += 1
             if "fi" in split and "return" not in after:
-                if i != end-1 and (("if" or "while")not in after):
+                if i != end-1 and (("if" and "while")not in after):
                     a[n] = index+1
                     b[n] = "fi"
                     n += 1
@@ -59,11 +59,11 @@ class program(object):
                     a[n] = index
                     b[n] = "last return"
                     n += 1
-                elif "fi" in after:
+                if "fi" in after:
                     a[n] = index
                     b[n] = "if return"
                     n += 1
-                elif "done" in after:
+                if "done" in after:
                     a[n] = index
                     b[n] = "while return"
                     n += 1
@@ -135,6 +135,17 @@ s="""
         done
     11: return x;
     } 
+"""
+s="""
+{
+if
+return
+fi
+while
+return
+done
+return
+}
 """
 """ s = ""
 while "}" not in s:
