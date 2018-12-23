@@ -5,22 +5,13 @@ class program(object):
 
     def CFG(self):
         codes = self.codes
-        """ codes=codes.replace("if("," if (")
-        codes=codes.replace("while("," while (")
-        codes=codes.replace(":if",": if ")
-        codes=codes.replace(":while",": while ")
-        codes=codes.replace(";fi","; fi ")
-        codes=codes.replace("done\n"," done ")
-        codes=codes.replace("fi\n"," fi ") """
-        codes=re.sub(r"(?<=\;|\s)fi(?=((\d)+?\:))"," fi ",codes)
+        codes=re.sub(r"(?<=\;|\s)fi(?=\s)"," fi ",codes)
         codes=re.sub(r"(?<=\:|\s)while(?=\(|\s)"," while ",codes)
         codes=re.sub(r"(?<=\:|\s)if(?=\(|\s)"," if ",codes)
-        codes=re.sub(r"(?<=\;|\s)done(?=((\d)+?\:))"," done ",codes)
+        codes=re.sub(r"(?<=\;|\s)done(?=\s)"," done ",codes)
         codes=re.sub(r"(?<=\:|\s)return(?=\s|\()"," return ",codes)
-
-        a = [0 for i in range(100)]
-        b = ["" for i in range(100)]
-        index = 0
+        a = []
+        b = []
         n = 0
         for i in range(codes.count(";")+1):
             split = codes.split(";")[i]
@@ -34,52 +25,49 @@ class program(object):
             split = codes.split(";")[i]
             after = codes.split(";")[i+1]
             before = codes.split(";")[i-1]
-            index += 1
-            if i == start and (" if " not in split and " while " not in split)and "return" not in split:
-                a[n] = index
-                b[n] = "begin"
+            if i == start and (" if " not in split and " while " not in split)and " return " not in split:
+                a.append(re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                b.append("begin")
                 n += 1
             if " if " in split:
                 if i == start or (" fi "in split or " done "in split ):
-                    a[n] = index
-                    b[n] = "if"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("if") 
                     n += 1
-                index += 1
                 if " return " not in split :
-                    a[n] = index
-                    b[n] = "if2"
+                    a.append( re.search(r"\S+?$",split.split(":")[1]).group())
+                    b.append("if2") 
                     n += 1
             if " fi " in split and " return " not in split:
                 if i != end-1 and (" if " not in split and " while "not in split):
-                    a[n] = index
-                    b[n] = "fi"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("fi") 
                     n += 1
             if " while " in split:
-                a[n] = index
-                b[n] = "while"
-                index += 1
+                a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                b.append("while") 
                 n+=1
                 if  " return " not in split:
-                    a[n] = index
-                    b[n] = "while2"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("while2") 
                     n += 1
             if " done " in split and " return " not in split :
                 if i != end-1 and (" if " not in split and " while "not in split):
-                    a[n] = index
-                    b[n] = "done"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("done") 
                     n += 1
             if " return " in split:
                 if (" done "not in after and" fi "  not in after):
-                    a[n] = index
-                    b[n] = "last return"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("last return") 
                     n += 1
                 if " fi " in after:
-                    a[n] = index
-                    b[n] = "if return"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("if return") 
                     n += 1
                 if " done " in after:
-                    a[n] = index
-                    b[n] = "while return"
+                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    b.append("while return") 
                     n += 1
 
         matrix = [[0 for i in range(n)] for i in range(n)]
@@ -106,11 +94,11 @@ class program(object):
             elif b[i] == "begin" or (b[i] == "fi" or b[i] == "done"):
                 matrix[i][i+1] = 1
 
-        order = [str(a[i])for i in range(n)]
+        order = [a[i]for i in range(n)]
         order.sort()
         for i in range(n):
             for j in range(n):
-                if a[j] == int(order[i]):
+                if a[j] == order[i]:
                     a[i], a[j] = a[j], a[i]
                     for k in range(n):
                         matrix[i][k], matrix[j][k] = matrix[j][k], matrix[i][k]
@@ -131,10 +119,9 @@ class program(object):
         else:
             print('[0]')
 
-""" s = ""
+s = ""
 while "}" not in s:
     s += input()
-    s += ' ' """
-s="main() { gs:if;}"
+    s += ' ' 
 p = program(s)
 p.CFG()
