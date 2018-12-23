@@ -5,9 +5,9 @@ class program(object):
 
     def CFG(self):
         codes = self.codes
+        codes=re.sub(r"(?<=\:|\s)if(?=\(|\s)"," if ",codes)
         codes=re.sub(r"(?<=\;|\s)fi(?=\s)"," fi ",codes)
         codes=re.sub(r"(?<=\:|\s)while(?=\(|\s)"," while ",codes)
-        codes=re.sub(r"(?<=\:|\s)if(?=\(|\s)"," if ",codes)
         codes=re.sub(r"(?<=\;|\s)done(?=\s)"," done ",codes)
         codes=re.sub(r"(?<=\:|\s)return(?=\s|\()"," return ",codes)
         a = []
@@ -48,7 +48,7 @@ class program(object):
                 b.append("while") 
                 n+=1
                 if  " return " not in split:
-                    a.append( re.search(r"(?<=\;|\s)\S+?(?=:)",split).group())
+                    a.append( re.search(r"\S+?$",split.split(":")[1]).group())
                     b.append("while2") 
                     n += 1
             if " done " in split and " return " not in split :
@@ -106,7 +106,7 @@ class program(object):
                         matrix[l][i], matrix[l][j] = matrix[l][j], matrix[l][i]
                     break
 
-        if n>1:
+        if n>2:
             print("[", end="")
             for i in range(n):
                 for j in range(n):
