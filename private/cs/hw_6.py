@@ -18,11 +18,11 @@ class program:
         r=""
         for i in range(codes.count(";")):
             split=codes.split(";")[i]
-            split=re.sub(r"(\s)*?\{(\s)+?","",split)
-            split=re.sub(r"(\s)*?\}(\s)+?","",split)
-            split=re.sub(r"(\s)*?bool(\s)+?","",split)
-            split=re.sub(r"(\s)*?(\S)+?\:(\s)*","",split)
-            split=re.sub(r"(\s)*?main(\s)*?\((\s)*?\)(\s)*?","",split)
+            split=re.sub(r"(\s)*\{(\s)*","",split)
+            split=re.sub(r"(\s)*\}(\s)*","",split)
+            split=re.sub(r"(\s)*bool(\s)+","",split)
+            split=re.sub(r"(\s)*(\S)+\:(\s)*","",split)
+            split=re.sub(r"(\s)*main(\s)*\((\s)*\)(\s)*?","",split)
             r=r+split+";"
         print(r) 
         
